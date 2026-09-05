@@ -31,7 +31,7 @@ Shop
 | Unique URLs per product | ✅ | `/product/:slug` (+ variant synced to URL) |
 | Backend + database + schema | ✅ | Express + SQLite (`server/src/schema.sql`, seed data) |
 | README: setup, API docs, tech stack, schema | ✅ | This file |
-| Demo video (2–5 min) | ⬜ | Follow [`DEMO_VIDEO_SCRIPT.md`](DEMO_VIDEO_SCRIPT.md), upload to Drive/YouTube (link-sharing on) |
+| Demo video (2–5 min) | ⬜ | Record the app + API walkthrough, upload to Drive/YouTube (link-sharing on) |
 | Deployed demo link | ⬜ | `render.yaml` included — Render → New → Blueprint → this repo (see Deployment) |
 | GitHub repo | ⬜ | Create repo, push: `git remote add origin <url> && git push -u origin main` |
 
