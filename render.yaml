@@ -1,0 +1,16 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# Deploy: Render Dashboard → New → Blueprint → point at this repo.
+# One Node service serves the REST API + the built React client.
+services:
+  - type: web
+    name: 1fi-marketplace
+    runtime: node
+    plan: free
+    buildCommand: npm run setup && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22.11.0"     # node:sqlite needs >= 22.5
+      - key: NPM_CONFIG_PRODUCTION
+        value: "false"       # dev deps (vite/concurrently) needed for setup+build

@@ -19,6 +19,24 @@ Shop
 
 ---
 
+## ✅ Submission Checklist (assignment deliverables)
+
+| Deliverable | Status | Where |
+|---|---|---|
+| 1Fi Marketplace inside Shop page (3 sections) | ✅ | Top Brands & Nearby Stores blank; Marketplace fully built |
+| Product listing, images, names, pricing, variants | ✅ | 4 products · 12 variants |
+| EMI plans (monthly, tenure, rate, cashback, fund) + selection | ✅ | 48 plans, computed via standard EMI formula |
+| CTA to proceed with selected plan | ✅ | Checkout modal → real persisted order |
+| No hardcoded data — dynamic APIs | ✅ | `GET /api/products`, `GET /api/products/:id` |
+| Unique URLs per product | ✅ | `/product/:slug` (+ variant synced to URL) |
+| Backend + database + schema | ✅ | Express + SQLite (`server/src/schema.sql`, seed data) |
+| README: setup, API docs, tech stack, schema | ✅ | This file |
+| Demo video (2–5 min) | ⬜ | Follow [`DEMO_VIDEO_SCRIPT.md`](DEMO_VIDEO_SCRIPT.md), upload to Drive/YouTube (link-sharing on) |
+| Deployed demo link | ⬜ | `render.yaml` included — Render → New → Blueprint → this repo (see Deployment) |
+| GitHub repo | ⬜ | Create repo, push: `git remote add origin <url> && git push -u origin main` |
+
+---
+
 ## ✨ Features
 
 - **Product listing** with image, name, pricing, discount badge, "EMI from" pill and variant count
@@ -354,13 +372,29 @@ MarketplacePage / ProductPage
 
 ## ☁️ Deployment
 
-The app is a single Node service once built — deploy anywhere Node runs (Render, Railway,
-Fly.io, a VPS). Suggested Render setup:
+The app is a single Node service once built — deploy anywhere Node runs.
+
+### Render (recommended — zero config, included [`render.yaml`](render.yaml))
+
+Render Dashboard → **New → Blueprint** → select this repo → Apply. The blueprint sets:
+- **Build:** `npm run setup && npm run build`
+- **Start:** `npm start`
+- **Health check:** `/api/health`
+- Node 22.11 (needed for `node:sqlite`)
+
+Or manually: Build command `npm run setup && npm run build`, Start command `npm start`.
+
+### Vercel (alternative — included [`vercel.json`](vercel.json) + [`api/index.js`](api/index.js))
+
+The Express app is reused as a serverless catch-all under `/api/*`; the client builds
+to static files. SQLite lives at `/tmp` (ephemeral) and auto-seeds per cold start — fine
+for a demo; use Render for a persistent DB.
+
+### Any other host (Railway, Fly.io, VPS)
 
 1. **Build command:** `npm run setup && npm run build`
 2. **Start command:** `npm start`
-3. Set env var `NODE_ENV=production` (optional — static serving is auto-detected from
-   `client/dist`).
+3. Set env var `NODE_VERSION` ≥ 22.5 (static serving is auto-detected from `client/dist`).
 
 Product renders are shipped with the repo in `client/public/images/` (Vite copies them into
 `dist` on build), so they work in dev and production without hotlinking: all iPhone 17 Pro
