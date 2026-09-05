@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "description": "1Fi Marketplace — browse smartphones and pay via mutual-fund-backed EMI plans",
+  "engines": {
+    "node": "22.11.0"
+  },
   "scripts": {
     "setup": "npm install && npm --prefix server install && npm --prefix client install",
     "seed": "npm --prefix server run seed",

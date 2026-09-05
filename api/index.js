@@ -1,25 +1,40 @@
 /**
  * Vercel serverless entry — catches everything under /api/*.
  *
- * The whole Express app (app.js) is reused here, so the exact same
- * routes/repos/DB power both local dev and production serverless.
- * SQLite lives at /tmp on Vercel (ephemeral) and auto-seeds per boot.
+ * Compiled as CommonJS (root package.json has no "type": "module"),
+ * so the ESM Express app is lazily dynamic-imported on first request
+ * and cached per lambda instance. SQLite lives at /tmp on Vercel
+ * (writable but ephemeral) and auto-seeds on cold start.
  */
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+let cached = null;
 
-// Point the DB at a writable location before the app opens it.
-process.env.DB_PATH = process.env.DB_PATH ?? '/tmp/marketplace.db';
+async function getHandler() {
+  if (!cached) {
+    // Point the DB at a writable location before the app opens it.
+    process.env.DB_PATH = process.env.DB_PATH ?? '/tmp/marketplace.db';
+    const [{ default: app }, { openDb }] = await Promise.all([
+      import('../server/src/app.js'),
+      import('../server/src/db.js'),
+    ]);
+    openDb(); // init + auto-seed during cold start
+    cached = app;
+  }
+  return cached;
+}
 
-const [{ default: app }, { openDb }] = await Promise.all([
-  import('../server/src/app.js'),
-  import('../server/src/db.js'),
-]);
-
-// Initialize DB + auto-seed during cold start (app.js also does this, but
-// warming it here keeps the first request snappy and surfaces errors early).
-openDb();
-
-export default app;
+module.exports = async function handler(req, res) {
+  try {
+    const app = await getHandler();
+    return app(req, res);
+  } catch (err) {
+    console.error('[api] failed to initialize:', err);
+    res.statusCode = 500;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(
+      JSON.stringify({
+        error: { code: 'INTERNAL_ERROR', message: 'Server failed to initialize.' },
+      }),
+    );
+  }
+};
