@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Build output
+client/dist/
+dist/
+
+# Environment
+.env
+.env.local
+
+# Database files (local dev)
+server/data/*.db
+server/data/*.db-journal
+server/data/*.db-wal
+server/data/*.db-shm
+
+# Misc
+.DS_Store
+*.log
+# Freebuff tooling
+.freebuff/
